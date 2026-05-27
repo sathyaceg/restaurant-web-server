@@ -1,7 +1,7 @@
 package com.example.demo;
 
-import com.example.demo.data.RestaurantDataStore;
 import com.example.demo.model.Restaurant;
+import com.example.demo.model.RestaurantResponse;
 import com.example.demo.service.RestaurantService;
 import com.google.common.base.Preconditions;
 import com.google.gson.Gson;
@@ -33,17 +33,23 @@ public class RestaurantController {
 
     @GetMapping("/top")
     public ResponseEntity<Restaurant> getTopRestaurant(@RequestParam(required = false) String city,
-                                                 @RequestParam(required = false) String name,
-                                                       @RequestParam(required = false) Integer budget) {
-        Restaurant restaurant = restaurantService.getRestaurantByFilter(city, Double.valueOf(budget));
+                                                        @RequestParam(required = false) String name,
+                                                        @RequestParam(required = false) Integer budget) {
+        Double budgetValue = budget == null ? null : Double.valueOf(budget);
+        Restaurant restaurant = restaurantService.getRestaurantByFilter(city, budgetValue);
         if (restaurant == null) {
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok(restaurant);
     }
 
+    @GetMapping("/external")
+    public ResponseEntity<RestaurantResponse> getExternalRestaurants(@RequestParam(defaultValue = "10") int page) {
+        return ResponseEntity.ok(restaurantService.fetchFoodOutletsPage(page));
+    }
+
     private void validateRestaurant(Restaurant restaurant) {
-        Preconditions.checkArgument(restaurant.name!= null, "Restaurant name must not be null");
-        Preconditions.checkArgument(restaurant.city!= null, "Restaurant city must not be null");
+        Preconditions.checkArgument(restaurant.name != null, "Restaurant name must not be null");
+        Preconditions.checkArgument(restaurant.city != null, "Restaurant city must not be null");
     }
 }

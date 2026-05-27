@@ -37,25 +37,6 @@ public class RestaurantDataStore {
         }
     }
 
-    public Restaurant getRestaurantById(String id) {
-        return restaurantsById.get(id);
-    }
-
-    public Restaurant getRestaurantByCityNameKey(String cityName, String restaurantName) {
-        NavigableMap<Integer, List<Restaurant>> cityCostMap = byCityAndCost.get(normalize(cityName));
-        if (cityCostMap == null) {
-            return null;
-        }
-
-        synchronized (cityCostMap) {
-            return cityCostMap.values().stream()
-                    .flatMap(List::stream)
-                    .filter(restaurant -> normalize(restaurant.name).equals(normalize(restaurantName)))
-                    .findFirst()
-                    .orElse(null);
-        }
-    }
-
     public List<Restaurant> getRestaurantsByCity(String cityName) {
         NavigableMap<Integer, List<Restaurant>> cityCostMap = byCityAndCost.get(normalize(cityName));
         if (cityCostMap == null) {
