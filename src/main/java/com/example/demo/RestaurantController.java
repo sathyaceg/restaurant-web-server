@@ -28,13 +28,18 @@ public class RestaurantController {
         Restaurant restaurant = gson.fromJson(rawJson, Restaurant.class);
         validateRestaurant(restaurant);
         restaurantService.addRestaurant(restaurant);
-        return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     @GetMapping("/top")
-    public ResponseEntity<Void> getTopRestaurant() {
-        // TODO: add query params (city, budget) and selection logic
-        return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();
+    public ResponseEntity<Restaurant> getTopRestaurant(@RequestParam(required = false) String city,
+                                                 @RequestParam(required = false) String name,
+                                                       @RequestParam(required = false) Integer budget) {
+        Restaurant restaurant = restaurantService.getRestaurantByFilter(city, Double.valueOf(budget));
+        if (restaurant == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(restaurant);
     }
 
     private void validateRestaurant(Restaurant restaurant) {
